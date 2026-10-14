@@ -1293,9 +1293,9 @@ const Hero3D=(()=>{
     if(!window.THREE){fail('3D engine did not load. Check your connection and reopen Ascend.');return;}
     try{renderer=new THREE.WebGLRenderer({antialias:true,alpha:true,powerPreference:'high-performance'});}catch(e){fail();return;}
     renderer.setPixelRatio(Math.min(2,window.devicePixelRatio||1));renderer.setClearColor(0x000000,0);host.appendChild(renderer.domElement);
-    scene=new THREE.Scene();camera=new THREE.PerspectiveCamera(30,1,.1,60);camera.position.set(0,1.3,5.3);camera.lookAt(0,1.1,0);
-    scene.add(new THREE.HemisphereLight(0xa8c6ff,0x0a1022,.95));
-    const key=new THREE.DirectionalLight(0xffffff,.95);key.position.set(2.2,4,3.2);scene.add(key);
+    scene=new THREE.Scene();camera=new THREE.PerspectiveCamera(30,1,.1,60);camera.position.set(0,1.35,5.0);camera.lookAt(0,1.10,0);
+    scene.add(new THREE.HemisphereLight(0xcbdcff,0x091022,1.25));
+    const key=new THREE.DirectionalLight(0xffffff,1.35);key.position.set(2.2,4,3.2);scene.add(key);
     const rimA=new THREE.PointLight(0x4C8DFF,1.6,9);rimA.position.set(-1.8,2.2,-1.8);scene.add(rimA);
     const rimB=new THREE.PointLight(0x8DB8FF,1.1,9);rimB.position.set(1.8,1.4,-2);scene.add(rimB);
     grad=new THREE.DataTexture(new Uint8Array([70,70,70,255,160,160,160,255,255,255,255,255]),3,1,THREE.RGBAFormat);grad.minFilter=grad.magFilter=THREE.NearestFilter;grad.needsUpdate=true;
@@ -1319,7 +1319,7 @@ const Hero3D=(()=>{
     A.outlineAccent=A.outlineAccent||new THREE.MeshBasicMaterial({color:0x4C8DFF,side:THREE.BackSide});
     A.outline=rank>=6?A.outlineAccent:outlineBlack;
     char=new THREE.Group();root.add(char);
-    const b=1+Math.min(cfg.level,90)*.004+Math.min(cfg.str,90)*.0016;A.bulk=b;
+    const b=1.12+Math.min(cfg.level,90)*.004+Math.min(cfg.str,90)*.0016;A.bulk=b;
     const M={skin:toon(av.skin),hair:toon(av.hairColor),out:toon(av.outfitColor),outD:toon(shade(av.outfitColor,.4)),pants:toon('#1A2236'),boot:toon('#0D111C'),
       acc:toon('#4C8DFF',{emissive:'#4C8DFF',ei:.75}),metal:toon('#C9D3E3'),dark:toon('#0A0D16'),white:new THREE.MeshBasicMaterial({color:0xffffff}),
       iris:new THREE.MeshBasicMaterial({color:new THREE.Color(av.eyes)}),pupil:new THREE.MeshBasicMaterial({color:0x0c0e16}),line:new THREE.MeshBasicMaterial({color:0x1a1420}),
@@ -1340,15 +1340,17 @@ const Hero3D=(()=>{
     for(const s of[-1,1]){const lg=grp(body,[s*.12,.92,0]);
       add(lg,new THREE.CapsuleGeometry(.088*Math.sqrt(b),.3,6,12),M.pants,[0,-.2,0]);
       add(lg,new THREE.CapsuleGeometry(.074*Math.sqrt(b),.28,6,12),M.pants,[0,-.56,0]);
-      add(lg,new THREE.BoxGeometry(.15,.13,.27),M.boot,[0,-.83,.04]);
+      add(lg,new THREE.BoxGeometry(.165,.17,.31),M.boot,[0,-.81,.085]);
       if(rank>=1)add(lg,new THREE.BoxGeometry(.155,.03,.275),M.acc,[0,-.77,.04],[0,0,0],[1,1,1],null);
+      add(lg,new THREE.CylinderGeometry(.081,.094,.36,12),M.boot,[0,-.66,-.015],[0,0,0],[1,1,1],null);
+      add(lg,new THREE.BoxGeometry(.17,.026,.28),M.metal,[0,-.875,.09],[0,0,0],[1,1,1],null);
       A.legs.push(lg);}
     add(body,new THREE.SphereGeometry(.17,20,14),M.pants,[0,.93,0],[0,0,0],[1.15*b,.72,.85]);
     /* torso */
     const torso=grp(body,[0,1.0,0]);A.torso=torso;
     const chestMat=av.outfit==='tank'?M.out:M.out;
-    add(torso,new THREE.CapsuleGeometry(.19,.26,8,16),chestMat,[0,.27,0],[0,0,0],[1.14*b,1,.72*Math.sqrt(b)]);
-    A.chest=add(torso,new THREE.SphereGeometry(.2,20,14),chestMat,[0,.43,.01],[0,0,0],[1.22*b,.62,.8*Math.sqrt(b)]);
+    add(torso,new THREE.CylinderGeometry(.205*b,.145*b,.60,10),chestMat,[0,.34,0],[0,0,0],[1.25,1,.86]);
+    A.chest=add(torso,new THREE.SphereGeometry(.23,28,18),chestMat,[0,.46,.01],[0,0,0],[1.4*b,.64,.73]);
     add(torso,new THREE.CylinderGeometry(.205*b,.2*b,.06,20),M.dark,[0,.06,0],[0,0,0],[1,1,.78]);
     add(torso,new THREE.BoxGeometry(.07,.05,.02),M.acc,[0,.06,.16],[0,0,0],[1,1,1],null);
     if(av.outfit==='jacket'){add(torso,new THREE.TorusGeometry(.115,.032,8,22),M.outD,[0,.6,0],[Math.PI/2,0,0]);add(torso,new THREE.BoxGeometry(.018,.42,.01),M.white,[0,.32,.155*Math.sqrt(b)],[-.12,0,0],[1,1,1],null);
@@ -1361,24 +1363,24 @@ const Hero3D=(()=>{
     /* neck + head */
     add(body,new THREE.CylinderGeometry(.058,.065,.14,12),M.skin,[0,1.64,0]);
     const head=grp(body,[0,1.86,0]);A.head=head;
-    add(head,new THREE.SphereGeometry(.21,32,24),M.skin,[0,0,0],[0,0,0],[.93,1,.95]);
-    add(head,new THREE.SphereGeometry(.15,24,16),M.skin,[0,-.11,.03],[0,0,0],[.82,.8,.8]);
-    for(const s of[-1,1])add(head,new THREE.SphereGeometry(.04,10,8),M.skin,[s*.19,-.01,0],[0,0,0],[.5,1,.8]);
+    add(head,new THREE.SphereGeometry(.178,40,32),M.skin,[0,.012,0],[0,0,0],[.88,1.18,.83]);
+    add(head,new THREE.ConeGeometry(.108,.155,5),M.skin,[0,-.157,.034],[Math.PI,Math.PI/4,0],[1,.78,.82]);
+    for(const s of[-1,1])add(head,new THREE.SphereGeometry(.034,10,8),M.skin,[s*.158,-.015,0],[0,0,0],[.5,1,.8]);
     /* eyes */
     A.eyes=[];
-    for(const s of[-1,1]){const e=grp(head,[s*.075,0,.192],[0,s*.35,0]);
-      const w=new THREE.Mesh(new THREE.CircleGeometry(.044,28),M.white);w.scale.set(.82,1.18,1);e.add(w);
-      const ir=new THREE.Mesh(new THREE.CircleGeometry(.033,28),M.iris);ir.position.set(0,-.004,.002);ir.scale.set(.86,1.18,1);e.add(ir);
-      const ir2=new THREE.Mesh(new THREE.CircleGeometry(.022,24),new THREE.MeshBasicMaterial({color:new THREE.Color(shade(av.eyes,.45))}));ir2.position.set(0,.004,.003);ir2.scale.set(.9,1.2,1);e.add(ir2);
-      const pu=new THREE.Mesh(new THREE.CircleGeometry(.013,18),M.pupil);pu.position.set(0,-.002,.004);pu.scale.set(.8,1.3,1);e.add(pu);
-      const hl=new THREE.Mesh(new THREE.CircleGeometry(.011,14),M.white);hl.position.set(s*-.01+.01,.02,.006);e.add(hl);
+    for(const s of[-1,1]){const e=grp(head,[s*.069,.016,.151],[0,s*.22,0]);
+      const w=new THREE.Mesh(new THREE.CircleGeometry(.035,28),M.white);w.scale.set(1.20,.67,1);e.add(w);
+      const ir=new THREE.Mesh(new THREE.CircleGeometry(.024,28),M.iris);ir.position.set(0,-.004,.002);ir.scale.set(1,.82,1);e.add(ir);
+      const ir2=new THREE.Mesh(new THREE.CircleGeometry(.017,24),new THREE.MeshBasicMaterial({color:new THREE.Color(shade(av.eyes,.45))}));ir2.position.set(0,.004,.003);ir2.scale.set(1,.85,1);e.add(ir2);
+      const pu=new THREE.Mesh(new THREE.CircleGeometry(.012,18),M.pupil);pu.position.set(0,-.002,.004);pu.scale.set(1,.94,1);e.add(pu);
+      const hl=new THREE.Mesh(new THREE.CircleGeometry(.006,14),M.white);hl.position.set(s*-.01+.01,.02,.006);e.add(hl);
       const hl2=new THREE.Mesh(new THREE.CircleGeometry(.005,10),M.white);hl2.position.set(-.012,-.02,.006);e.add(hl2);
-      const lash=new THREE.Mesh(new THREE.BoxGeometry(.086,.013,.004),M.line);lash.position.set(s*.004,.05,.006);lash.rotation.z=s*-.18;e.add(lash);
-      const brow=new THREE.Mesh(new THREE.BoxGeometry(.075,.012,.004),new THREE.MeshBasicMaterial({color:new THREE.Color(shade(av.hairColor,.45))}));brow.position.set(s*.004,.076,.004);brow.rotation.z=s*-.12;e.add(brow);
+      const lash=new THREE.Mesh(new THREE.BoxGeometry(.086,.009,.005),M.line);lash.position.set(s*.004,.030,.006);lash.rotation.z=s*-.18;e.add(lash);
+      const brow=new THREE.Mesh(new THREE.BoxGeometry(.078,.010,.005),new THREE.MeshBasicMaterial({color:new THREE.Color(shade(av.hairColor,.45))}));brow.position.set(s*.004,.061,.009);brow.rotation.z=s*-.12;e.add(brow);
       if(rank>=6){const gl=new THREE.Sprite(new THREE.SpriteMaterial({map:glowTex(av.eyes),transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:.9}));gl.scale.setScalar(.16);gl.position.z=.02;e.add(gl);}
       A.eyes.push(e);}
-    const mouth=new THREE.Mesh(new THREE.TorusGeometry(.022,.0045,6,14,Math.PI),M.line);mouth.position.set(0,-.1,.183);mouth.rotation.z=Math.PI;head.add(mouth);
-    for(const s of[-1,1]){const bl=new THREE.Mesh(new THREE.CircleGeometry(.025,14),M.blush);bl.position.set(s*.112,-.055,.168);bl.rotation.y=s*.55;bl.scale.set(1.4,.6,1);head.add(bl);}
+    const mouth=new THREE.Mesh(new THREE.BoxGeometry(.024,.003,.003),M.line);mouth.position.set(0,-.112,.133);head.add(mouth);
+    for(const side of[-1,1]){add(head,new THREE.SphereGeometry(.037,12,10),M.skin,[side*.083,-.092,.093],[0,0,0],[.85,.46,.56],null);}
     /* hair */
     buildHair(head,av,M);
     if(rank>=4){const h=grp(head,[0,.36,-.04],[-.25,0,0]);A.halo=h;
@@ -1396,6 +1398,40 @@ const Hero3D=(()=>{
       if(cfg.cls==='monk'){add(fo,new THREE.TorusGeometry(.064,.012,6,18),M.acc,[0,-.25,0],[Math.PI/2,0,0],[1,1,1],null);add(fo,new THREE.TorusGeometry(.064,.012,6,18),M.acc,[0,-.21,0],[Math.PI/2,0,0],[1,1,1],null);}
       if(rank>=1){add(sh,new THREE.SphereGeometry(.12*b,18,12,0,Math.PI*2,0,Math.PI/2),M.metal,[0,.01,0],[0,0,s*-.25],[1.05,.75,1]);add(sh,new THREE.TorusGeometry(.115*b,.013,6,24),M.acc,[0,.0,0],[Math.PI/2,0,0],[1.05,1,1],null);}
       A.arms.push({sh,fo,s});}
+
+    /* Layered dark-fantasy combat outfit. All pieces are genuine 3D meshes. */
+    const leather=toon('#101625'),leatherHi=toon('#243149'),trim=toon('#8398bd');
+    const edge=toon(av.outfitColor,{emissive:av.outfitColor,ei:.12});
+    // Tailored high collar, shoulder plates, diagonal armour and centre fastening.
+    for(const side of[-1,1]){
+      add(torso,new THREE.CylinderGeometry(.047,.065,.19,7),leather,[side*.133,.535,-.009],[0,0,side*-.22],[1,1,.73]);
+      add(torso,new THREE.BoxGeometry(.12,.27,.035),leatherHi,[side*.111,.34,.16],[0,0,side*-.23],[1,1,1],null);
+      add(torso,new THREE.BoxGeometry(.014,.41,.018),trim,[side*.177,.31,.174],[0,0,side*-.12],[1,1,1],null);
+      add(body,new THREE.SphereGeometry(.10,20,14),leatherHi,[side*.28*b,1.50,.035],[0,0,side*.2],[1.26,.64,1.3]);
+      add(body,new THREE.BoxGeometry(.11,.025,.15),trim,[side*.29*b,1.54,.07],[0,0,side*.16],[1,1,1],null);
+    }
+    add(torso,new THREE.BoxGeometry(.026,.42,.024),edge,[0,.30,.192],[0,0,0],[1,1,1],null);
+    for(let i=0;i<4;i++)add(torso,new THREE.BoxGeometry(.062,.013,.018),trim,[0,.16+i*.097,.207],[0,0,0],[1,1,1],null);
+    // Coat tails hang independently beside the legs, retaining the class animation.
+    A.coatTails=[];
+    if(av.outfit==='jacket'||rank>=2){
+      const coatMat=toon(av.outfitColor,{extra:{side:THREE.DoubleSide}});
+      for(const side of[-1,1]){
+        const pivot=grp(body,[side*.125,1.035,-.065]);
+        const shape=new THREE.Shape();
+        shape.moveTo(-.115,0);shape.lineTo(.11,0);shape.lineTo(.17,-.38);
+        shape.lineTo(.13,-.87);shape.lineTo(-.12,-.89);shape.lineTo(-.17,-.43);
+        const panel=add(pivot,new THREE.ExtrudeGeometry(shape,{depth:.023,bevelEnabled:true,bevelThickness:.008,bevelSize:.007,bevelSegments:1}),coatMat,[0,0,0],[0,side*.12,side*-.035],[1,1,1],null);
+        add(panel,new THREE.BoxGeometry(.016,.68,.018),trim,[side*.105,-.45,.035],[0,0,side*.07],[1,1,1],null);
+        A.coatTails.push({pivot,side});
+      }
+    }
+    // Defined gloves and bracers, instead of exposed spherical hands.
+    A.arms.forEach(({fo,s})=>{
+      add(fo,new THREE.CylinderGeometry(.07,.058,.20,12),leather,[0,-.16,.005],[0,0,0],[1,1,1],null);
+      add(fo,new THREE.BoxGeometry(.11,.034,.13),trim,[0,-.23,.02],[0,0,0],[1,1,1],null);
+      for(let f=0;f<4;f++)add(fo,new THREE.CapsuleGeometry(.013,.066,3,6),leather,[(-1.5+f)*.026,-.335,.058],[.12,0,0],[1,1,1],null);
+    });
     /* class gear */
     buildGear(body,cfg,M,b);
     /* cape */
@@ -1422,8 +1458,8 @@ const Hero3D=(()=>{
   }
   function spike(parent,mat,len,rad,dir,base=.17,center=[0,0,0]){const d=new THREE.Vector3(...dir).normalize();const m=add(parent,new THREE.ConeGeometry(rad,len,8),mat,[center[0]+d.x*(base+len*.42),center[1]+d.y*(base+len*.42),center[2]+d.z*(base+len*.42)]);m.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),d);return m;}
   function buildHair(head,av,M){
-    const hm=M.hair;add(head,new THREE.SphereGeometry(.226,32,18,0,Math.PI*2,0,Math.PI*.56),hm,[0,.01,-.012],[-.65,0,0],[.97,1.03,1]);
-    const bang=(x,dx,len=.13,rad=.05)=>spike(head,hm,len,rad,[dx,-1,.55],.0,[x,.15,.17]);
+    const hm=M.hair;add(head,new THREE.SphereGeometry(.198,40,24,0,Math.PI*2,0,Math.PI*.57),hm,[0,.057,-.026],[-.58,0,0],[.93,.94,.96]);
+    const bang=(x,dx,len=.13,rad=.05)=>spike(head,hm,len,rad,[dx,-1,.55],.0,[x,.142,.128]);
     if(av.hair==='spiky'){
       [[0,1,-.25,.3],[.5,.9,-.35,.27],[-.5,.9,-.35,.27],[.9,.45,-.3,.24],[-.9,.45,-.3,.24],[.3,.55,-.9,.28],[-.3,.55,-.9,.28],[0,.25,-1,.3],[.7,-.05,-.75,.22],[-.7,-.05,-.75,.22],[.2,.95,.3,.2],[-.25,.9,.25,.2]].forEach(([x,y,z,l])=>spike(head,hm,l,.075,[x,y,z]));
       bang(-.12,-.35);bang(-.04,-.1,.15);bang(.05,.15,.14);bang(.13,.4);}
@@ -1465,9 +1501,10 @@ const Hero3D=(()=>{
     root.rotation.y=rot+spin;
     const hov=A.hover?.12+Math.sin(t*1.5)*.05:Math.sin(t*2)*.006;A.body.position.y=hov+jump;
     if(A.shadow){const k=1-(hov+jump)*.6;A.shadow.scale.setScalar(Math.max(.4,k));}
-    A.torso.scale.y=1+Math.sin(t*2)*.012;A.chest.scale.z=.8*Math.sqrt(A.bulk)*(1+Math.sin(t*2)*.03);
+    A.torso.scale.y=1+Math.sin(t*2)*.012;A.chest.scale.z=.73*(1+Math.sin(t*2)*.03);
     A.head.rotation.y=Math.sin(t*.7)*.09;A.head.rotation.x=Math.sin(t*1.1)*.03-raise*.15;A.head.position.y=1.86+Math.sin(t*2)*.006;
     A.arms.forEach(({sh,fo,s})=>{sh.rotation.z=s*(.14+Math.sin(t*1.6)*.025+raise*2.5);sh.rotation.x=Math.sin(t*1.6+s)*.06;fo.rotation.x=-.12-Math.sin(t*1.6)*.05-raise*.3;});
+    if(A.coatTails)A.coatTails.forEach(({pivot,side})=>{pivot.rotation.x=Math.sin(t*1.8+side)*.045-raise*.14;pivot.rotation.z=side*(.04+Math.sin(t*1.4)*.025);});
     if(A.tail){A.tail.rotation.z=Math.sin(t*2.2)*.16;A.tail.rotation.x=.5+Math.sin(t*1.7)*.08;}
     const blink=(t%4.2)>4.05?.12:1;A.eyes.forEach(e=>e.scale.y=blink);
     if(A.cape){const pa=A.cape.geometry.attributes.position,bs=A.capeBase;for(let i=0;i<pa.count;i++){const y=bs[i*3+1];const f=-y/.95;pa.array[i*3+2]=bs[i*3+2]-f*f*(.12+Math.sin(t*2.4+y*5+bs[i*3]*3)*.05)-raise*f*.2;}pa.needsUpdate=true;A.cape.geometry.computeVertexNormals();}
